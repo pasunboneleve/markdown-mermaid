@@ -2,24 +2,26 @@ EMACS ?= emacs
 DEPS_DIR := ./libs
 MARKDOWN_MODE_DIR := $(DEPS_DIR)/markdown-mode
 
-# Set load path to point to the auto-downloaded directory
+# Setup Load Path to include the downloaded dependency
 LOAD_PATH := -L $(MARKDOWN_MODE_DIR)
 
 .PHONY: all compile test clean deps
 
 all: compile test
 
-# 1. The Dependency Target
-# Checks if libs/markdown-mode exists. If not, clones it.
-deps: $(MARKDOWN_MODE_DIR)
-
-$(MARKDOWN_MODE_DIR):
-	@echo "Dependency 'markdown-mode' missing. Downloading..."
+# 1. Dependency Target
+# Checks if the directory exists. If not, it clones the repo.
+deps:
 	@mkdir -p $(DEPS_DIR)
-	git clone --depth 1 https://github.com/jrblevin/markdown-mode.git $(MARKDOWN_MODE_DIR)
+	@if [ ! -d "$(MARKDOWN_MODE_DIR)" ]; then \
+		echo "Downloading markdown-mode..."; \
+		git clone --depth 1 https://github.com/jrblevin/markdown-mode.git $(MARKDOWN_MODE_DIR); \
+	else \
+		echo "Dependencies already installed."; \
+	fi
 
 # 2. Compilation
-# Depends on 'deps' so we know markdown-mode is present before compiling
+# We add 'deps' as a prerequisite so it runs BEFORE compilation
 compile: deps
 	@echo "Compiling..."
 	$(EMACS) -Q -batch $(LOAD_PATH) -L . \
@@ -27,7 +29,7 @@ compile: deps
 		-f batch-byte-compile markdown-mermaid.el
 
 # 3. Testing
-# Depends on 'deps' to ensure environment is ready
+# We add 'deps' as a prerequisite so it runs BEFORE testing
 test: deps
 	@echo "Running tests..."
 	$(EMACS) -Q -batch $(LOAD_PATH) -L . \
@@ -41,7 +43,6 @@ clean:
 	rm -f tests/*.elc
 	rm -f mermaid-block-*
 
-# Optional: cleans dependencies too if you want a fresh start
 clean-deps: clean
 	@echo "Removing dependencies..."
 	rm -rf $(DEPS_DIR)
