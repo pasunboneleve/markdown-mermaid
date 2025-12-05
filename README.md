@@ -29,11 +29,11 @@ Verify the installation by running `mmdc --version` in your terminal.
     (require 'markdown-mermaid)
     ```
 
-### Using `straight.el` (Recommended)
+### Using [elpaca](https://github.com/progfolio/elpaca/blob/master/doc/manual.org#use-package-integration) (Recommended)
 
 ```elisp
 (use-package markdown-mermaid
-  :straight (markdown-mermaid :type git :host github :repo "pasunboneleve/markdown-mermaid")
+  :ensure (markdown-mermaid :type git :host github :repo "pasunboneleve/markdown-mermaid")
   :bind (:map markdown-mode-map
               ("C-c C-x m" . markdown-mermaid-preview)))
 ```
