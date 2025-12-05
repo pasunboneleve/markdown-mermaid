@@ -9,13 +9,15 @@ LOAD_PATH := -L ./$(MARKDOWN_MODE_DIR) -L .
 
 all: compile test
 
-# We verify dependencies INSIDE the target to guarantee execution
+# Logic: Clone repo, then immediately remove its internal .git folder
+# so GitHub Actions treats it as just files, not a submodule.
 compile:
 	@echo "Checking dependencies..."
 	@mkdir -p $(DEPS_DIR)
 	@if [ ! -f "$(MARKDOWN_MODE_DIR)/markdown-mode.el" ]; then \
 		echo "Downloading markdown-mode..."; \
 		git clone --depth 1 https://github.com/jrblevin/markdown-mode.git $(MARKDOWN_MODE_DIR); \
+		rm -rf $(MARKDOWN_MODE_DIR)/.git; \
 	fi
 	@echo "Compiling..."
 	$(EMACS) -Q -batch $(LOAD_PATH) \
@@ -28,6 +30,7 @@ test:
 	@if [ ! -f "$(MARKDOWN_MODE_DIR)/markdown-mode.el" ]; then \
 		echo "Downloading markdown-mode..."; \
 		git clone --depth 1 https://github.com/jrblevin/markdown-mode.git $(MARKDOWN_MODE_DIR); \
+		rm -rf $(MARKDOWN_MODE_DIR)/.git; \
 	fi
 	@echo "Running tests..."
 	$(EMACS) -Q -batch $(LOAD_PATH) \
