@@ -35,10 +35,7 @@ Verify the installation by running `mmdc --version` in your terminal.
 (use-package markdown-mermaid
   :straight (markdown-mermaid :type git :host github :repo "pasunboneleve/markdown-mermaid")
   :bind (:map markdown-mode-map
-              ("C-c C-x m" . markdown-mermaid-preview))
-  :custom
-  ;; Replace with the actual path found via `which mmdc`
-  (markdown-mermaid-mmdc-path "/usr/local/bin/mmdc"))
+              ("C-c C-x m" . markdown-mermaid-preview)))
 ```
 
 ### Using Emacs 29+ (`package-vc`)
@@ -49,9 +46,7 @@ If you are on Emacs 29 or newer and prefer the built-in package manager:
 (use-package markdown-mermaid
   :vc (:url "https://github.com/pasunboneleve/markdown-mermaid" :rev :newest)
   :bind (:map markdown-mode-map
-              ("C-c C-x m" . markdown-mermaid-preview))
-  :custom
-  (markdown-mermaid-mmdc-path "/usr/local/bin/mmdc"))
+              ("C-c C-x m" . markdown-mermaid-preview)))
 ```
 
 ## Usage

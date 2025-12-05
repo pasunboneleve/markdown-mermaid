@@ -32,8 +32,10 @@
 ;;; Configuration
 
 (defcustom markdown-mermaid-mmdc-path (executable-find "mmdc")
-  "Path to the mermaid-cli executable (mmdc)."
-  :type 'file
+  "Path to the mermaid-cli executable (mmdc).
+Defaults to looking up 'mmdc' in your system path."
+  :type '(choice (file :tag "Path to executable")
+                 (const :tag "Not found" nil))
   :group 'markdown-mermaid)
 
 (defvar markdown-mermaid-temp-files nil
@@ -99,52 +101,52 @@
   "Compile and preview the Mermaid block under cursor."
   (interactive)
   (unless markdown-mermaid-mmdc-path
-    (error "Mermaid CLI not found. Please set `markdown-mermaid-mmdc-path'"))
+    (user-error "Mermaid CLI (mmdc) not found.  Please run 'npm install -g @mermaid-js/mermaid-cli' or set 'markdown-mermaid-mmdc-path' manually"))
 
-  (let ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
-        (temp-output (make-temp-file "mermaid-block-" nil ".png"))
-        (temp-config (make-temp-file "mermaid-config-" nil ".json"))
-        start end mermaid-code)
+ (let ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
+       (temp-output (make-temp-file "mermaid-block-" nil ".png"))
+       (temp-config (make-temp-file "mermaid-config-" nil ".json"))
+       start end mermaid-code)
 
-    ;; Register for cleanup
-    (push temp-input markdown-mermaid-temp-files)
-    (push temp-output markdown-mermaid-temp-files)
-    (push temp-config markdown-mermaid-temp-files)
+   ;; Register for cleanup
+   (push temp-input markdown-mermaid-temp-files)
+   (push temp-output markdown-mermaid-temp-files)
+   (push temp-config markdown-mermaid-temp-files)
 
-    ;; Find bounds
-    (save-excursion
-      (let ((case-fold-search t))
-        (if (re-search-backward "^[ \t]*```[ \t]*mermaid" nil t)
-            (progn
-              (forward-line 1)
-              (setq start (point))
-              (if (re-search-forward "^[ \t]*```" nil t)
-                  (setq end (match-beginning 0))
-                (error "Found start of block, but not the end")))
-          (error "Cursor is not inside a ```mermaid block"))))
+   ;; Find bounds
+   (save-excursion
+     (let ((case-fold-search t))
+       (if (re-search-backward "^[ \t]*```[ \t]*mermaid" nil t)
+           (progn
+             (forward-line 1)
+             (setq start (point))
+             (if (re-search-forward "^[ \t]*```" nil t)
+                 (setq end (match-beginning 0))
+               (error "Found start of block, but not the end")))
+         (error "Cursor is not inside a ```mermaid block"))))
 
-    (markdown-mermaid--generate-theme-config temp-config)
+   (markdown-mermaid--generate-theme-config temp-config)
 
-    (setq mermaid-code (buffer-substring-no-properties start end))
-    (with-temp-file temp-input
-      (insert mermaid-code))
+   (setq mermaid-code (buffer-substring-no-properties start end))
+   (with-temp-file temp-input
+     (insert mermaid-code))
 
-    (message "Compiling Mermaid block...")
-    (call-process markdown-mermaid-mmdc-path
-                  nil
-                  "*mermaid-error*"
-                  nil
-                  "-i" temp-input
-                  "-o" temp-output
-                  "-c" temp-config
-                  "-b" "transparent")
+   (message "Compiling Mermaid block...")
+   (call-process markdown-mermaid-mmdc-path
+                 nil
+                 "*mermaid-error*"
+                 nil
+                 "-i" temp-input
+                 "-o" temp-output
+                 "-c" temp-config
+                 "-b" "transparent")
 
-    (if (file-exists-p temp-output)
-        (progn
-          (message "Preview generated.")
-          (find-file-other-window temp-output))
-      (switch-to-buffer-other-window "*mermaid-error*")
-      (message "Compilation failed. Check *mermaid-error* buffer."))))
+   (if (file-exists-p temp-output)
+       (progn
+         (message "Preview generated.")
+         (find-file-other-window temp-output))
+     (switch-to-buffer-other-window "*mermaid-error*")
+     (message "Compilation failed. Check *mermaid-error* buffer."))))
 
 (provide 'markdown-mermaid)
 ;;; markdown-mermaid.el ends here
