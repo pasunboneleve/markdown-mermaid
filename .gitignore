@@ -1,3 +1,4 @@
 *.elclibs/
 *.elc
 mermaid-block-*
+libs/
