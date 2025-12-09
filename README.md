@@ -17,21 +17,7 @@ Verify the installation by running `mmdc --version` in your terminal.
 
 ## Installation
 
-### Manual Installation
-
-1.  Clone this repository:
-    ```bash
-    git clone https://github.com/pasunboneleve/markdown-mermaid.git ~/.emacs.d/site-lisp/markdown-mermaid
-    ```
-2.  Add the following to your `init.el`:
-    ```elisp
-    (add-to-list 'load-path "~/.emacs.d/site-lisp/markdown-mermaid")
-    (require 'markdown-mermaid)
-    ```
-
-### Installation
-
-#### From MELPA (Recommended)
+#### Using `package-install`
 
 Once `markdown-mermaid` is available on MELPA, you can install it using `package-install`:
 
@@ -39,7 +25,6 @@ Once `markdown-mermaid` is available on MELPA, you can install it using `package
 (package-install 'markdown-mermaid)
 ```
 
-#### Manual Installation
 ### Using [elpaca](https://github.com/progfolio/elpaca/blob/master/doc/manual.org#use-package-integration) (Recommended)
 
 ```elisp
@@ -59,6 +44,18 @@ If you are on Emacs 29 or newer and prefer the built-in package manager:
   :bind (:map markdown-mode-map
               ("C-c C-x m" . markdown-mermaid-preview)))
 ```
+
+## Using older emacs < 29
+
+1.  Clone this repository:
+    ```bash
+    git clone https://github.com/pasunboneleve/markdown-mermaid.git ~/.emacs.d/site-lisp/markdown-mermaid
+    ```
+2.  Add the following to your `init.el`:
+    ```elisp
+    (add-to-list 'load-path "~/.emacs.d/site-lisp/markdown-mermaid")
+    (require 'markdown-mermaid)
+    ```
 
 ## Usage
 
