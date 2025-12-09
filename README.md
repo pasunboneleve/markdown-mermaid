@@ -21,7 +21,7 @@ Verify the installation by running `mmdc --version` in your terminal.
 
 1.  Clone this repository:
     ```bash
-    git clone [https://github.com/pasunboneleve/markdown-mermaid.git](https://github.com/pasunboneleve/markdown-mermaid.git) ~/.emacs.d/site-lisp/markdown-mermaid
+    git clone https://github.com/pasunboneleve/markdown-mermaid.git ~/.emacs.d/site-lisp/markdown-mermaid
     ```
 2.  Add the following to your `init.el`:
     ```elisp
