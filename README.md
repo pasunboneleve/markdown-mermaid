@@ -29,6 +29,17 @@ Verify the installation by running `mmdc --version` in your terminal.
     (require 'markdown-mermaid)
     ```
 
+### Installation
+
+#### From MELPA (Recommended)
+
+Once `markdown-mermaid` is available on MELPA, you can install it using `package-install`:
+
+```elisp
+(package-install 'markdown-mermaid)
+```
+
+#### Manual Installation
 ### Using [elpaca](https://github.com/progfolio/elpaca/blob/master/doc/manual.org#use-package-integration) (Recommended)
 
 ```elisp

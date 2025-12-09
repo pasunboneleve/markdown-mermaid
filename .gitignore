@@ -2,3 +2,4 @@
 *.elc
 mermaid-block-*
 libs/
+.aider*
