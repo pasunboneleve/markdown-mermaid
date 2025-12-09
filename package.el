@@ -1,4 +1,5 @@
 ;;; package.el --- Package metadata for markdown-mermaid
+;; no-byte-compile: t
 
 ;; Author: Daniel Vianna <dmlvianna@gmail.com>
 ;; Version: 0.1.1
@@ -13,7 +14,7 @@
 
 (define-package 'markdown-mermaid
   "Preview Mermaid diagrams within Markdown buffers."
-  :version "0.1.0"
+  :version "0.1.1"
   :summary "Preview Mermaid diagrams within Markdown buffers."
   :description
   "This package extracts mermaid code blocks from markdown buffers, compiles
