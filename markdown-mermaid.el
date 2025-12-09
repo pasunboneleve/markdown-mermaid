@@ -33,7 +33,7 @@
 
 (defcustom markdown-mermaid-mmdc-path (executable-find "mmdc")
   "Path to the mermaid-cli executable (mmdc).
-Defaults to looking up 'mmdc' in your system path."
+Defaults to looking up `mmdc' in your system path."
   :type '(choice (file :tag "Path to executable")
                  (const :tag "Not found" nil))
   :group 'markdown-mermaid)
