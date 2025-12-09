@@ -31,7 +31,7 @@ Once `markdown-mermaid` is available on MELPA, you can install it using `package
 (use-package markdown-mermaid
   :ensure (markdown-mermaid :type git :host github :repo "pasunboneleve/markdown-mermaid")
   :bind (:map markdown-mode-map
-              ("C-c C-x m" . markdown-mermaid-preview)))
+              ("C-c m" . markdown-mermaid-preview)))
 ```
 
 ### Using Emacs 29+ (`package-vc`)
@@ -42,7 +42,7 @@ If you are on Emacs 29 or newer and prefer the built-in package manager:
 (use-package markdown-mermaid
   :vc (:url "https://github.com/pasunboneleve/markdown-mermaid" :rev :newest)
   :bind (:map markdown-mode-map
-              ("C-c C-x m" . markdown-mermaid-preview)))
+              ("C-c m" . markdown-mermaid-preview)))
 ```
 
 ## Using older emacs < 29
@@ -75,7 +75,7 @@ If you are on Emacs 29 or newer and prefer the built-in package manager:
 4.  Run the command:
 
       * **M-x** `markdown-mermaid-preview`
-      * Or use the keybinding if you configured one (e.g., `C-c C-x m`).
+      * Or use the keybinding if you configured one (e.g., `C-c m`).
 
 A new buffer will open displaying the rendered diagram.
 
