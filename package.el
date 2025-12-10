@@ -2,7 +2,7 @@
 ;; no-byte-compile: t
 
 ;; Author: Daniel Vianna <dmlvianna@gmail.com>
-;; Version: 0.1.1
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "26.1") (markdown-mode "2.3"))
 ;; Keywords: markdown, tools, mermaid, diagrams
 ;; URL: https://github.com/pasunboneleve/markdown-mermaid
@@ -14,7 +14,7 @@
 
 (define-package 'markdown-mermaid
   "Preview Mermaid diagrams within Markdown buffers."
-  :version "0.1.1"
+  :version "0.2.0"
   :summary "Preview Mermaid diagrams within Markdown buffers."
   :description
   "This package extracts mermaid code blocks from markdown buffers, compiles
