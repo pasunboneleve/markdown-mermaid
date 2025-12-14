@@ -1,5 +1,6 @@
 ;;; markdown-mermaid-tests.el --- Tests for markdown-mermaid  -*- lexical-binding: t; -*-
 
+;;; Code:
 (require 'ert)
 (require 'markdown-mermaid)
 (require 'json)
