@@ -40,8 +40,8 @@ Defaults to looking up `mmdc' in your system path."
                  (const :tag "Not found" nil))
   :group 'markdown-mermaid)
 
-(defvar markdown-mermaid-temp-files nil
-  "List of temporary files created during the session.")
+(defvar-local markdown-mermaid-temp-files-to-delete nil
+  "List of temporary files created for this specific mermaid preview buffer.")
 
 ;;; Internal Functions
 
@@ -82,34 +82,27 @@ Defaults to looking up `mmdc' in your system path."
     (with-temp-file file-path
       (insert json-str))))
 
-(defun markdown-mermaid-cleanup ()
-  "Delete all temporary files created by markdown-mermaid."
-  (interactive)
-  (let ((count 0))
-    (dolist (file markdown-mermaid-temp-files)
+(defun markdown-mermaid--delete-temp-files-on-kill ()
+  "Delete temporary files associated with the current buffer."
+  (when markdown-mermaid-temp-files-to-delete
+    (dolist (file markdown-mermaid-temp-files-to-delete)
       (when (file-exists-p file)
-        (delete-file file)
-        (setq count (1+ count))))
-    (setq markdown-mermaid-temp-files nil)
-    (when (> count 0)
-      (message "Cleaned up %d temporary Mermaid files." count))))
+        (delete-file file)))))
 
-(add-hook 'kill-emacs-hook #'markdown-mermaid-cleanup)
 
 ;;; Main Command
 
 (defun markdown-mermaid--compile (mermaid-code)
-  "Compile the MERMAID-CODE and return the output file path."
+  "Compile the MERMAID-CODE and return a list: (OUTPUT-PATH TEMP-FILES-LIST)."
   (let ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
         (temp-output (make-temp-file "mermaid-block-" nil ".png"))
         (temp-config (make-temp-file "mermaid-config-" nil ".json"))
         (screen-dimensions
-         (alist-get 'geometry (car (display-monitor-attributes-list)))))
+         (alist-get 'geometry (car (display-monitor-attributes-list))))
+        (temp-files nil))
 
     ;; Register for cleanup
-    (push temp-input markdown-mermaid-temp-files)
-    (push temp-output markdown-mermaid-temp-files)
-    (push temp-config markdown-mermaid-temp-files)
+    (setq temp-files (list temp-input temp-output temp-config))
 
     (markdown-mermaid--generate-theme-config temp-config)
 
@@ -129,19 +122,31 @@ Defaults to looking up `mmdc' in your system path."
                   "--height" (number-to-string (nth 3 screen-dimensions)))
 
     (if (file-exists-p temp-output)
-        temp-output
-      nil)))
-
-(defun markdown-mermaid--display (image-path)
-  "Display the image at IMAGE-PATH in a buffer."
-  (if image-path
+        (list temp-output temp-files)
       (progn
-        (message "Preview generated.")
-        (unless (eq (frame-parameter nil 'type) 'x)
-          (find-file-other-window image-path))
-        (rename-buffer "*mermaid-image*" t))
-    (switch-to-buffer-other-window "*mermaid-error*")
-    (message "Compilation failed. Check *mermaid-error* buffer.")))
+        ;; If compilation fails, clean up input/config files immediately
+        (dolist (file (list temp-input temp-config))
+          (when (file-exists-p file) (delete-file file)))
+        nil))))
+
+(defun markdown-mermaid--display (compile-result)
+  "Display the image based on COMPILE-RESULT (list of path and temp files)."
+  (let ((image-path (car compile-result))
+        (temp-files (cadr compile-result)))
+    (if image-path
+        (progn
+          (message "Preview generated.")
+          (let ((preview-buffer (get-buffer-create "*mermaid-image*")))
+            (with-current-buffer preview-buffer
+              ;; Ensure we are in the correct buffer context for buffer-local variables
+              (setq-local markdown-mermaid-temp-files-to-delete temp-files)
+              (add-hook 'kill-buffer-hook 'markdown-mermaid--delete-temp-files-on-kill nil t)
+              (unless (eq (frame-parameter nil 'type) 'x)
+                (find-file image-path))
+              (rename-buffer "*mermaid-image*" t)
+              (switch-to-buffer-other-window preview-buffer))))
+      (switch-to-buffer-other-window "*mermaid-error*")
+      (message "Compilation failed. Check *mermaid-error* buffer."))))
 
 (defun markdown-mermaid--compile-and-display ()
   "Compile the Mermaid block and display it in a buffer."

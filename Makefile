@@ -29,5 +29,5 @@ test: $(DEP_FILE)
 
 clean:
 	@echo "Cleaning..."
-	rm -f *.elc tests/*.elc mermaid-block-*
+	rm -f *.elc tests/*.elc mermaid-block-* mermaid-config-*
 	rm -rf libs
