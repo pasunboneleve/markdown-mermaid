@@ -1,4 +1,5 @@
 [![CI](https://github.com/pasunboneleve/markdown-mermaid/actions/workflows/test.yml/badge.svg)](https://github.com/pasunboneleve/markdown-mermaid/actions/workflows/test.yml)
+[![melpazoid](https://github.com/pasunboneleve/markdown-mermaid/actions/workflows/melpazoid.yml/badge.svg)](https://github.com/pasunboneleve/markdown-mermaid/actions/workflows/melpazoid.yml)
 # markdown-mermaid.el
 
 A lightweight Emacs package that allows you to preview [Mermaid](https://mermaid-js.github.io/mermaid/#/) diagrams directly from Markdown buffers.
