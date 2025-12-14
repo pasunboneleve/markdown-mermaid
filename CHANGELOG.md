@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-12-15
+
+### Changed
+
+- Instead of having a global hook to delete temporary image files,
+  we'll instead use a `kill-buffer-hook`. So the files are deleted
+  immediately when the buffer is killed.
+
+- Added [melpa](https://github.com/riscy/melpazoid) compliance checks.
+
 ## [0.2.0] - 2025-12-10
 
 ### Changed

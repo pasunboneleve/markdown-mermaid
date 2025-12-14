@@ -6,7 +6,7 @@
 ;; Keywords: markdown, tools, mermaid, diagrams
 ;; URL: https://github.com/pasunboneleve/markdown-mermaid
 ;; SPDX-License-Identifier: GPL-3.0-or-later
-;; Version: 0.2.0
+;; Version: 0.3.0
 
 ;;; Commentary:
 
