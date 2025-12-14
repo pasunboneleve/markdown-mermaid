@@ -136,15 +136,21 @@ Defaults to looking up `mmdc' in your system path."
     (if image-path
         (progn
           (message "Preview generated.")
-          (let ((preview-buffer (get-buffer-create "*mermaid-image*")))
-            (with-current-buffer preview-buffer
-              ;; Ensure we are in the correct buffer context for buffer-local variables
+
+          ;; Load the image file into a buffer. find-file-noselect returns the buffer object.
+          (let ((image-buffer (find-file-noselect image-path)))
+
+            (with-current-buffer image-buffer
+              ;; 1. Ensure the buffer is named consistently for previews.
+              ;; This buffer is now visiting the temporary file.
+              (rename-buffer "*mermaid-image*" t)
+
+              ;; 2. Set up cleanup variables/hook in the buffer holding the image.
               (setq-local markdown-mermaid-temp-files-to-delete temp-files)
               (add-hook 'kill-buffer-hook 'markdown-mermaid--delete-temp-files-on-kill nil t)
-              (unless (eq (frame-parameter nil 'type) 'x)
-                (find-file image-path))
-              (rename-buffer "*mermaid-image*" t)
-              (switch-to-buffer-other-window preview-buffer))))
+
+              ;; 3. Display the buffer.
+              (switch-to-buffer-other-window image-buffer))))
       (switch-to-buffer-other-window "*mermaid-error*")
       (message "Compilation failed. Check *mermaid-error* buffer."))))
 
