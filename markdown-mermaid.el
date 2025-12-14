@@ -1,10 +1,12 @@
 ;;; markdown-mermaid.el --- Preview Mermaid code blocks in Markdown  -*- lexical-binding: t; -*-
 
-;; Author: Daniel Vianna <dmlvianna@gmail.com>
-;; Version: 0.2.0
+;; Author: Daniel Vianna and contributors
+;; Maintainer: Daniel Vianna <dmlvianna@gmail.com>
 ;; Package-Requires: ((emacs "26.1") (markdown-mode "2.3"))
 ;; Keywords: markdown, tools, mermaid, diagrams
 ;; URL: https://github.com/pasunboneleve/markdown-mermaid
+;; SPDX-License-Identifier: GPL-3.0-or-later
+;; Version: 0.2.0
 
 ;;; Commentary:
 
