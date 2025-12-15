@@ -27,6 +27,7 @@
 (require 'color)
 
 (defvar inhibit-file-name-modes) ; Declare special variable for compiler compatibility
+(defvar after-find-file-hook)    ; Declare special variable for compiler compatibility
 
 (defgroup markdown-mermaid nil
   "Preview Mermaid diagrams within Markdown buffers."
@@ -139,13 +140,15 @@ Defaults to looking up `mmdc' in your system path."
         (progn
           (message "Preview generated.")
 
-          ;; Use inhibit-file-name-modes to prevent auto-mode detection (like image-mode)
-          ;; which can fail in batch/non-graphical environments (Emacs 28/29/30).
+          ;; Use inhibit-file-name-modes and temporarily disable after-find-file-hook
+          ;; to prevent auto-mode detection (like image-mode) which can fail in batch/non-graphical environments.
           (let ((inhibit-file-name-modes t)
+                (after-find-file-hook nil)
                 (image-buffer (find-file-noselect image-path)))
 
             ;; Dummy reference to satisfy strict compiler check for unused lexical variable
             (when inhibit-file-name-modes nil)
+            (when after-find-file-hook nil)
 
             (with-current-buffer image-buffer
               ;; 1. Ensure the buffer is named consistently for previews.
