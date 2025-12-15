@@ -145,6 +145,11 @@ Defaults to looking up `mmdc' in your system path."
                 (auto-mode-alist nil)
                 (image-buffer (find-file-noselect image-path)))
 
+            ;; Force fundamental mode immediately to prevent image-mode from running
+            ;; if auto-mode detection was not fully inhibited by the dynamic variables.
+            (with-current-buffer image-buffer
+              (fundamental-mode))
+
             ;; Dummy reference to satisfy strict compiler check for unused lexical variable
             (when inhibit-file-name-modes nil)
             (when auto-mode-alist nil)
