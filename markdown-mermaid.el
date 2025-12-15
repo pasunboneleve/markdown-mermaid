@@ -147,7 +147,8 @@ Defaults to looking up `mmdc' in your system path."
 
               ;; 2. Set up cleanup variables/hook in the buffer holding the image.
               (setq-local markdown-mermaid-temp-files-to-delete temp-files)
-              (add-hook 'kill-buffer-hook 'markdown-mermaid--delete-temp-files-on-kill nil t)
+              (add-hook 'kill-buffer-hook
+                        #'markdown-mermaid--delete-temp-files-on-kill nil t)
 
               ;; 3. Display the buffer.
               (switch-to-buffer-other-window image-buffer))))
