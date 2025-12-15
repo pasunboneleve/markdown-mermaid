@@ -26,6 +26,8 @@
 (require 'json)
 (require 'color)
 
+(defvar inhibit-file-name-modes) ; Declare special variable for compiler compatibility
+
 (defgroup markdown-mermaid nil
   "Preview Mermaid diagrams within Markdown buffers."
   :group 'markdown
@@ -137,8 +139,13 @@ Defaults to looking up `mmdc' in your system path."
         (progn
           (message "Preview generated.")
 
-          ;; Load the image file into a buffer. find-file-noselect returns the buffer object.
-          (let ((image-buffer (find-file-noselect image-path)))
+          ;; Use inhibit-file-name-modes to prevent auto-mode detection (like image-mode)
+          ;; which can fail in batch/non-graphical environments (Emacs 28/29/30).
+          (let ((inhibit-file-name-modes t)
+                (image-buffer (find-file-noselect image-path)))
+
+            ;; Dummy reference to satisfy strict compiler check for unused lexical variable
+            (when inhibit-file-name-modes nil)
 
             (with-current-buffer image-buffer
               ;; 1. Ensure the buffer is named consistently for previews.
