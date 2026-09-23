@@ -19,6 +19,7 @@
 ;;
 ;; Requirements:
 ;;   npm install -g @mermaid-js/mermaid-cli
+;;   cargo install mermaid-rs-renderer
 
 ;;; Code:
 
@@ -35,9 +36,15 @@
 
 (defcustom markdown-mermaid-mmdc-path (executable-find "mmdc")
   "Path to the mermaid-cli executable (mmdc).
-Defaults to looking up `mmdc' in your system path."
+Defaults to looking up `mmdc' in your system path.
+It is also possible to use mermaid-rs-renderer (mmdr)"
   :type '(choice (file :tag "Path to executable")
                  (const :tag "Not found" nil))
+  :group 'markdown-mermaid)
+
+(defcustom markdown-mermaid-output-extension ".png"
+  "Output file extension for generated diagrams."
+  :type 'string
   :group 'markdown-mermaid)
 
 (defvar-local markdown-mermaid-temp-files-to-delete nil
@@ -95,7 +102,7 @@ Defaults to looking up `mmdc' in your system path."
 (defun markdown-mermaid--compile (mermaid-code)
   "Compile the MERMAID-CODE and return a list: (OUTPUT-PATH TEMP-FILES-LIST)."
   (let ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
-        (temp-output (make-temp-file "mermaid-block-" nil ".png"))
+        (temp-output (make-temp-file "mermaid-block-" nil markdown-mermaid-output-extension))
         (temp-config (make-temp-file "mermaid-config-" nil ".json"))
         (screen-dimensions
          (alist-get 'geometry (car (display-monitor-attributes-list))))
@@ -110,16 +117,19 @@ Defaults to looking up `mmdc' in your system path."
       (insert mermaid-code))
 
     (message "Compiling Mermaid block...")
-    (call-process markdown-mermaid-mmdc-path
-                  nil
-                  "*mermaid-error*"
-                  nil
-                  "-i" temp-input
-                  "-o" temp-output
-                  "-c" temp-config
-                  "-b" "transparent"
-                  "--width" (number-to-string (nth 2 screen-dimensions))
-                  "--height" (number-to-string (nth 3 screen-dimensions)))
+    (let ((cmd-args (append
+                     `(,markdown-mermaid-mmdc-path
+                       nil
+                       "*mermaid-error*"
+                       nil
+                       "-i" ,temp-input
+                       "-o" ,temp-output
+                       "-c" ,temp-config)
+                     (when (string-search "mmdc" markdown-mermaid-mmdc-path)
+                       '("-b" "transparent"))
+                     `("--width" ,(number-to-string (nth 2 screen-dimensions))
+                       "--height" ,(number-to-string (nth 3 screen-dimensions))))))
+      (apply #'call-process cmd-args))
 
     (if (file-exists-p temp-output)
         (list temp-output temp-files)
