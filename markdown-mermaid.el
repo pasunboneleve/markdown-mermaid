@@ -45,12 +45,20 @@ Defaults to looking up `mmdc' in your system path."
 
 ;;; Internal Functions
 
+(defun markdown-mermaid--face-color (face attribute)
+  "Return FACE's ATTRIBUTE as a hexadecimal RGB color."
+  (let ((color (face-attribute face attribute nil 'default)))
+    (when (and (stringp color)
+               (color-name-to-rgb color))
+      (apply #'color-rgb-to-hex
+             (append (color-name-to-rgb color) '(2))))))
+
 (defun markdown-mermaid--get-theme-colors ()
   "Return an alist of color strings based on the current Emacs theme."
-  (let* ((fg (face-attribute 'default :foreground nil 'default))
-         (bg (face-attribute 'default :background nil 'default))
-         (secondary (face-attribute 'font-lock-type-face :foreground nil 'default))
-         (lines (face-attribute 'font-lock-constant-face :foreground nil 'default)))
+  (let* ((fg (markdown-mermaid--face-color 'default :foreground))
+         (bg (markdown-mermaid--face-color 'default :background))
+         (secondary (markdown-mermaid--face-color 'font-lock-type-face :foreground))
+         (lines (markdown-mermaid--face-color 'font-lock-constant-face :foreground)))
 
     ;; Fallbacks
     (when (or (not (stringp fg)) (string-empty-p fg)) (setq fg "#000000"))
@@ -88,7 +96,6 @@ Defaults to looking up `mmdc' in your system path."
     (dolist (file markdown-mermaid-temp-files-to-delete)
       (when (file-exists-p file)
         (delete-file file)))))
-
 
 ;;; Main Command
 
