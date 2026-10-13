@@ -45,6 +45,16 @@ Defaults to looking up `mmdc' in your system path."
 
 ;;; Internal Functions
 
+(defun markdown-mermaid--version ()
+  "Return mmdc version"
+  (with-temp-buffer
+    (call-process markdown-mermaid-mmdc-path nil t nil "--version")
+    (mapcar
+     'string-to-number
+     (string-split (string-chop-newline (buffer-string)) "\\.")
+     )
+    ))
+
 (defun markdown-mermaid--get-theme-colors ()
   "Return an alist of color strings based on the current Emacs theme."
   (let* ((fg (face-attribute 'default :foreground nil 'default))
@@ -94,12 +104,21 @@ Defaults to looking up `mmdc' in your system path."
 
 (defun markdown-mermaid--compile (mermaid-code)
   "Compile the MERMAID-CODE and return a list: (OUTPUT-PATH TEMP-FILES-LIST)."
-  (let ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
+  (let* ((temp-input (make-temp-file "mermaid-block-" nil ".mmd"))
         (temp-output (make-temp-file "mermaid-block-" nil ".png"))
         (temp-config (make-temp-file "mermaid-config-" nil ".json"))
         (screen-dimensions
          (alist-get 'geometry (car (display-monitor-attributes-list))))
-        (temp-files nil))
+        (temp-files nil)
+        (screen-width (nth 2 screen-dimensions))
+        (screen-height (nth 3 screen-dimensions))
+        (dimension-args (if
+                            (< (car (markdown-mermaid--version)) 12)
+                            (list "--width" (number-to-string screen-width)
+                              "--height" (number-to-string screen-height))
+                          (list "--size" (number-to-string (min screen-height screen-width)))
+                              ))
+        )
 
     ;; Register for cleanup
     (setq temp-files (list temp-input temp-output temp-config))
@@ -110,7 +129,7 @@ Defaults to looking up `mmdc' in your system path."
       (insert mermaid-code))
 
     (message "Compiling Mermaid block...")
-    (call-process markdown-mermaid-mmdc-path
+    (apply #'call-process markdown-mermaid-mmdc-path
                   nil
                   "*mermaid-error*"
                   nil
@@ -118,8 +137,7 @@ Defaults to looking up `mmdc' in your system path."
                   "-o" temp-output
                   "-c" temp-config
                   "-b" "transparent"
-                  "--width" (number-to-string (nth 2 screen-dimensions))
-                  "--height" (number-to-string (nth 3 screen-dimensions)))
+                  dimension-args)
 
     (if (file-exists-p temp-output)
         (list temp-output temp-files)
